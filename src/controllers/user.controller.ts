@@ -1,14 +1,10 @@
 import type { Request, Response } from "express";
 import * as z from 'zod'
-import { prisma } from "../../lib/prisma";
 import { Prisma } from "../../generated/prisma/client";
 import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
 import userService from "../services/user.service"
 import tokenService from "../services/token.service";
-import redisService from "../services/redis.service"
 import validationService from "../services/validation.service";
-import {add} from "date-fns"
 import refreshService from "../services/refresh.service";
 
 
@@ -98,7 +94,7 @@ const login = async (req: Request, res: Response) => {
         // // temp
         // const r_token = await redisService.getLoginDetails(sid, user.id);
 
-        await refreshService.addRefreshToken(user.id, refreshToken);
+        await refreshService.addRefreshToken(user.id, refreshToken, sid);
 
         res.json({
             message: "login successful",
@@ -113,14 +109,20 @@ const login = async (req: Request, res: Response) => {
 }
 
 const refresh = async (req: Request, res: Response) => {
+    try{
 
 
 
-    
-    res.json({
-        sidFromCookie: req.cookies.sid,
-        refreshTokenFromCookie: req.signedCookies.refresh_token
-    })
+        res.json({
+            sidFromCookie: req.cookies.sid,
+            refreshTokenFromCookie: req.signedCookies.refresh_token
+        })
+
+    }catch(err){
+        res.status(500).json({
+            message: "Something went wrong!",
+        })
+    }
 }
 
 const getMe = async (req: Request, res: Response) => {

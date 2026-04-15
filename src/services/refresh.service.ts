@@ -2,7 +2,7 @@ import {add} from "date-fns"
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcryptjs";
 
-const addRefreshToken = async (user_id: number, token: string) => {
+const addRefreshToken = async (user_id: number, token: string, sid: string) => {
     const expireAt = add(new Date(), {
         days: 7
     });
@@ -11,7 +11,8 @@ const addRefreshToken = async (user_id: number, token: string) => {
     const refreshToken = await prisma.refresh_tokens.create({
         data: {
             user_id,
-            token: hash_token,
+            hash_token,
+            sid,
             expires_at: expireAt,
         }
     });
