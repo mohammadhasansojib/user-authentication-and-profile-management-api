@@ -11,6 +11,16 @@ const getUserByEmail = async (email: string) => {
     return user;
 }
 
+const getUserById = async (id: number) => {
+    const user = await prisma.users.findUnique({
+        where: {
+            id
+        }
+    })
+
+    return user;
+}
+
 const createUser = async (email: string, name: string, password: string) => {
     const password_hash = await bcrypt.hash(password, 10);
 
@@ -26,7 +36,7 @@ const createUser = async (email: string, name: string, password: string) => {
 }
 
 export default {
-    getUserByEmail,
     createUser,
-
+    getUserByEmail,
+    getUserById,
 }

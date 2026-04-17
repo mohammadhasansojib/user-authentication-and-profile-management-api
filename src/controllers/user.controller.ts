@@ -5,7 +5,9 @@ import bcrypt from "bcryptjs"
 import userService from "../services/user.service"
 import tokenService from "../services/token.service";
 import validationService from "../services/validation.service";
-import refreshService from "../services/refresh.service";
+import jwt from "jsonwebtoken"
+
+const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 
 
 const register = async (req: Request, res: Response) => {
@@ -70,15 +72,22 @@ const login = async (req: Request, res: Response) => {
         })
 
         const sid = req.session.id;
-        const accessToken = tokenService.getAccessToken(sid, user.id, user.email);
-        const refreshToken = tokenService.getRefreshToken(sid, user.id, user.email);
+        const accessToken = tokenService.createAccessToken(sid, user.id, user.email);
+        const refreshToken = tokenService.createRefreshToken(sid, user.id, user.email);
 
+        res.cookie("uid", user.id, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: '/',
+            maxAge: refreshTokenLifetime
+        })
         res.cookie("sid", sid, {
             httpOnly: true,
             secure: true,
             sameSite: "strict",
             path: "/",
-            maxAge: 60 * 60 * 24 * 7
+            maxAge: refreshTokenLifetime
         });
         res.cookie("refresh_token", refreshToken, {
             httpOnly: true,
@@ -86,7 +95,7 @@ const login = async (req: Request, res: Response) => {
             sameSite: "strict",
             signed: true,
             path: "/",
-            maxAge: 60 * 60 * 24 * 7
+            maxAge: refreshTokenLifetime
         });
 
         // await redisService.setLoginDetails(sid, user.id, refreshToken);
@@ -94,7 +103,7 @@ const login = async (req: Request, res: Response) => {
         // // temp
         // const r_token = await redisService.getLoginDetails(sid, user.id);
 
-        await refreshService.addRefreshToken(user.id, refreshToken, sid);
+        await tokenService.storeRefreshToken(user.id, refreshToken, sid);
 
         res.json({
             message: "login successful",
@@ -111,11 +120,76 @@ const login = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
     try{
 
+        const userId = Number(req.cookies.uid);
+        const sid = req.cookies.sid;
+        const cookieToken = req.signedCookies.refresh_token;
 
+        if(!userId || !sid) return res.status(401).json({
+            message: "cookie not found",
+        })
+
+        const refreshToken = await tokenService.getRefreshToken(userId, sid);
+
+        if(!refreshToken) return res.status(401).json({
+            message: "refresh token does not exist!",
+        })
+
+        const isSame = await bcrypt.compare(cookieToken, refreshToken.hash_token);
+
+        if(!isSame) return res.status(401).json({
+            message: "invalid token",
+        })
+
+        const isValid = jwt.verify(cookieToken, process.env.JWT_SECRET as string);
+
+        if(!isValid){
+            await tokenService.deleteRefreshToken(userId, sid);
+
+            return res.status(401).json({
+                message: "invalid token"
+            })
+        }
+
+        const user = await userService.getUserById(userId);
+
+        if(!user) return res.status(500).json({
+            message: "Something went wrong",
+        })
+
+        await tokenService.deleteRefreshToken(userId, sid);
+
+        const newSid = req.session.id;
+        const newAccessToken = tokenService.createAccessToken(newSid, user.id, user.email);
+        const newRefreshToken = tokenService.createRefreshToken(newSid, user.id, user.email);
+
+        res.cookie("uid", user.id, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: '/',
+            maxAge: refreshTokenLifetime
+        })
+        res.cookie("sid", newSid, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: "/",
+            maxAge: refreshTokenLifetime
+        });
+        res.cookie("refresh_token", newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            signed: true,
+            path: "/",
+            maxAge: refreshTokenLifetime
+        });
+
+        await tokenService.storeRefreshToken(user.id, newRefreshToken, newSid);
 
         res.json({
-            sidFromCookie: req.cookies.sid,
-            refreshTokenFromCookie: req.signedCookies.refresh_token
+            message: "access token get successfully",
+            accessToken: newAccessToken
         })
 
     }catch(err){
