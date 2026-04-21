@@ -1,5 +1,5 @@
 import express from "express";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv"
 dotenv.config()
 import { prisma } from "../lib/prisma";
@@ -38,6 +38,11 @@ app.use(session({
 // user router
 app.use("/api", userRouter);
 
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    res.status(err.status || 500).json({
+        message: err.message || "Internal Server Error",
+    })
+})
 
 app.get("/", (req: Request, res: Response) => {
     res.json({message: "Hello World"});

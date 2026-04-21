@@ -200,7 +200,25 @@ const refresh = async (req: Request, res: Response) => {
 }
 
 const getMe = async (req: Request, res: Response) => {
+    try{
+        const id = Number(req.user?.uid);
+        
+        const user = await userService.getUserById(id);
 
+        if(!user) return res.status(404).json({
+            message: "user not found"
+        });
+
+        res.json({
+            message: "user get successfully",
+            user
+        })
+
+    }catch(err){
+        res.status(500).json({
+            message: (err as any).message
+        })
+    }
 }
 
 const updateMe = async (req: Request, res: Response) => {

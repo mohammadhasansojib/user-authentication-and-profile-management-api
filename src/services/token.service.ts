@@ -10,8 +10,8 @@ const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 const createAccessToken = (sid: string, userId: number, email: string) => {
     const accessToken = jwt.sign(
         {
+            uid: userId,
             sid,
-            userId,
             email,
             type: "access"
         },
