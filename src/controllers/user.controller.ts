@@ -16,14 +16,16 @@ const register = async (req: Request, res: Response) => {
 
         const validUser = await validationService.validateUser(email, name, password);
 
-        const user = await userService.createUser(validUser.email, validUser.name, validUser.password);
+        // const user = await userService.createUser(validUser.email, validUser.name, validUser.password);
 
         res.status(201).json({
             message: "registration successful",
-            data: {
-                name: user.name,
-                email: user.email
-            }
+            // data: {
+            //     name: user.name,
+            //     email: user.email
+            // },
+            validUser
+
         })
 
 
@@ -222,7 +224,57 @@ const getMe = async (req: Request, res: Response) => {
 }
 
 const updateMe = async (req: Request, res: Response) => {
+    try{
 
+        const id = Number(req.user?.uid);
+        const data: {
+            email?: string,
+            name?: string,
+            password?: string
+        } = req.body;
+
+        const user = await userService.getUserById(id);
+        if(!user) return res.status(404).json({
+            message: "user not found"
+        })
+
+        if(data.hasOwnProperty("name")) user.name = data.name as string;
+        if(data.hasOwnProperty("email")) user.email = data.email as string;
+        if(data.hasOwnProperty("password")){
+            user.password_hash = data.password as string;
+        }
+
+        const validData = await validationService.validateUpdateInfo(data);
+        if(!validData) return res.status(401).json({
+            message: "Invalid data"
+        })
+
+        const newUser = await userService.updateUser(validData, id);
+
+
+        res.json({
+            message: "updated successfully",
+            data: newUser
+        })
+
+    } catch(err) {
+        if(err instanceof z.ZodError){
+            let messages = [];
+
+            for(const issue of err.issues){
+                messages.push(`${issue.message} -> ${issue.path}`);
+            }
+
+            res.status(400).json({
+                messages,
+                issues: err.issues
+            })
+        } else {
+            res.status(500).json({
+                message: "Soemthing went wrong"
+            })
+        }
+    }
 }
 
 const logout = async (req: Request, res: Response) => {

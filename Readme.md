@@ -63,7 +63,7 @@
 ---
 
 - ### `PUT - /api/users/me`
-    - verify access token not null and valid & is there any refresh token exist with same user id and session id in redis
+    - verify access token not null and valid & is there any refresh token exist with same user id and session id in redis/persistent-db
         - if valid
             - check requested data exist or not in db
                 - if exist

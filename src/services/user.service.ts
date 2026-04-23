@@ -35,8 +35,36 @@ const createUser = async (email: string, name: string, password: string) => {
     return user;
 }
 
+const updateUser = async (data: {
+    email?: string,
+    name?: string,
+    password?: string
+}, id: number) => {
+    const userData: {
+        email?: string,
+        name?: string,
+        password_hash?: string
+    } = {};
+
+    if(data.hasOwnProperty("email")) userData.email = data.email;
+    if(data.hasOwnProperty("name")) userData.name = data.name;
+    if(data.hasOwnProperty("password")) userData.password_hash = data.password;
+
+    if (data.hasOwnProperty("password")) {
+        userData.password_hash = await bcrypt.hash(userData.password_hash as string, 10);
+    }
+
+    const updateUser = await prisma.users.update({
+        where: { id },
+        data: userData
+    });
+
+    return updateUser;
+}
+
 export default {
     createUser,
+    updateUser,
     getUserByEmail,
     getUserById,
 }
