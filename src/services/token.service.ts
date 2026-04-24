@@ -65,7 +65,7 @@ const getRefreshToken = async (user_id: number, sid: string) => {
 
     return refreshToken;
 }
-const deleteRefreshToken = async (user_id: number, sid: string) => {
+const deleteSingleRefreshToken = async (user_id: number, sid: string) => {
     const refreshToken = await prisma.refresh_tokens.delete({
         where: {
             user_id,
@@ -74,6 +74,15 @@ const deleteRefreshToken = async (user_id: number, sid: string) => {
     })
 
     return refreshToken;
+}
+const deleteAllRefreshToken = async (user_id: number) => {
+    const refreshTokens = await prisma.refresh_tokens.deleteMany({
+        where: {
+            user_id
+        }
+    })
+
+    return refreshTokens;
 }
 
 
@@ -99,7 +108,8 @@ export default {
     createRefreshToken,
     storeRefreshToken,
     getRefreshToken,
-    deleteRefreshToken,
-
+    deleteSingleRefreshToken,
+    deleteAllRefreshToken,
+    
     createResetToken,
 }
