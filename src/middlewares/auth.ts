@@ -79,6 +79,15 @@ const accessAuth = async (req: Request, res: Response, next: NextFunction) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
 
+        await prisma.refresh_tokens.deleteMany({
+            where: {
+                user_id: (decoded as userType).uid,
+                expires_at: {
+                    lte: new Date()
+                }
+            }
+        })
+
         const refreshToken = await prisma.refresh_tokens.findUnique({
             where: {
                 sid: (decoded as userType).sid,
@@ -102,7 +111,6 @@ const accessAuth = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 }
-
 
 
 
