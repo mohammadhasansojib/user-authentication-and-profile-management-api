@@ -80,12 +80,12 @@
 
 ---
 
-- ### `POST - /api/auth/logout?all-device=true/false`
-    - check logout `all-device` query true or false
+- ### `POST - /api/auth/logout?all_device=true/false`
+    - check logout `all_device` query true or false
         - if true
-            - verify access token not null and valid & is there any refresh token exist with same user id and session id in redis
+            - verify access token not null and valid & is there any refresh token exist with same user id and session id in redis/persistent-db
                 - if valid
-                    - delete all the refresh token with same user id in redis
+                    - delete all the refresh token with same user id in redis/persistent-db
                     - return success message with 200 status code
                 - if invalid
                     - return failed message for invalid access token with 401 status code

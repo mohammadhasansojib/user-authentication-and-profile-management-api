@@ -73,7 +73,23 @@ const login = async (req: Request, res: Response) => {
             message: "Invalid Credentials, wrong password"
         })
 
+        res.clearCookie("uid");
+        res.clearCookie("sid");
+        res.clearCookie("refresh_token");
+
+        const regenerateSession = (req: Request): Promise<void> => {
+            return new Promise((resolve, reject) => {
+                req.session.regenerate((err: any) => {
+                    if(err) return reject(err);
+                    resolve();
+                });
+            })
+        }
+
+        await regenerateSession(req);
+
         const sid = req.session.id;
+
         const accessToken = tokenService.createAccessToken(sid, user.id, user.email);
         const refreshToken = tokenService.createRefreshToken(sid, user.id, user.email);
 
@@ -112,6 +128,8 @@ const login = async (req: Request, res: Response) => {
             accessToken,
         });
 
+        return res.end();
+
     }catch(err){
         res.status(500).json({
             message: `Something went wrong: ${(err as any).message}`
@@ -145,7 +163,7 @@ const refresh = async (req: Request, res: Response) => {
         const isValid = jwt.verify(cookieToken, process.env.JWT_SECRET as string);
 
         if(!isValid){
-            await tokenService.deleteRefreshToken(userId, sid);
+            await tokenService.deleteSingleRefreshToken(userId, sid);
 
             return res.status(401).json({
                 message: "invalid token"
@@ -158,7 +176,7 @@ const refresh = async (req: Request, res: Response) => {
             message: "Something went wrong",
         })
 
-        await tokenService.deleteRefreshToken(userId, sid);
+        await tokenService.deleteSingleRefreshToken(userId, sid);
 
         const newSid = req.session.id;
         const newAccessToken = tokenService.createAccessToken(newSid, user.id, user.email);
@@ -278,7 +296,44 @@ const updateMe = async (req: Request, res: Response) => {
 }
 
 const logout = async (req: Request, res: Response) => {
+    try{
 
+        const all_device = req.query.all_device;
+        let isAllDevice: boolean;
+        const id = Number(req.user?.uid);
+        const sid = req.user?.sid;
+        let message: string;
+
+        if(all_device !== "true" && all_device !== "false"){
+            return res.status(400).json({
+                message: "bad request, query must be 'true' or 'false'"
+            })
+        } else {
+            if(all_device === "true") isAllDevice = true;
+            else isAllDevice = false;
+        }
+
+        if(isAllDevice){
+            const refreshTokens = await tokenService.deleteAllRefreshToken(id);
+            message = "deleted all refresh tokens successfully";
+        } else {
+            const refreshToken = await tokenService.deleteSingleRefreshToken(id, sid as string);
+            message = "deleted refresh token successfully";
+        }
+
+        res.clearCookie("uid");
+        res.clearCookie("sid");
+        res.clearCookie("refresh_token");
+
+        res.json({message})
+
+        return res.end();
+
+    } catch(err) {
+        res.status(500).json({
+            message: "Something went wrong!"
+        })
+    }
 }
 
 const forgetPass = async (req: Request, res: Response) => {

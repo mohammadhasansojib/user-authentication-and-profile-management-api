@@ -9,8 +9,6 @@ router.post('/auth/login', User.login);
 
 router.post('/auth/refresh', User.refresh);
 
-router.post('/auth/logout', User.logout);
-
 router.post('/auth/forget-password', User.forgetPass);
 router.post('/auth/reset-password', User.resetPass);
 
@@ -19,5 +17,6 @@ router.use(accessAuth);
 router.get('/users/me', User.getMe);
 router.put('/users/me', User.updateMe);
 
+router.post('/auth/logout', User.logout);
 
 export default router;
