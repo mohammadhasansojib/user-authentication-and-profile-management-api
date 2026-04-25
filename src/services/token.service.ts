@@ -99,6 +99,22 @@ const createResetToken = (email: string) => {
 
     return resetToken;
 }
+const storeResetToken = async (token: string, user_id: number) => {
+    const expireAt = add(new Date(), {
+        minutes: 10
+    });
+    const hash_token = await bcrypt.hash(token, 10);
+
+    const resetToken = await prisma.password_reset_tokens.create({
+        data: {
+            user_id,
+            token: hash_token,
+            expires_at: expireAt
+        }
+    });
+
+    return resetToken;
+}
 
 
 
@@ -112,4 +128,5 @@ export default {
     deleteAllRefreshToken,
     
     createResetToken,
+    storeResetToken,
 }

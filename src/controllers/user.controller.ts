@@ -6,6 +6,7 @@ import userService from "../services/user.service"
 import tokenService from "../services/token.service";
 import validationService from "../services/validation.service";
 import jwt from "jsonwebtoken"
+import mailService from "../services/mail.service";
 
 const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 
@@ -16,15 +17,15 @@ const register = async (req: Request, res: Response) => {
 
         const validUser = await validationService.validateUser(email, name, password);
 
-        // const user = await userService.createUser(validUser.email, validUser.name, validUser.password);
+        const user = await userService.createUser(validUser.email, validUser.name, validUser.password);
 
         res.status(201).json({
             message: "registration successful",
-            // data: {
-            //     name: user.name,
-            //     email: user.email
-            // },
-            validUser
+            data: {
+                name: validUser.name,
+                email: validUser.email
+            },
+            // validUser
 
         })
 
@@ -337,11 +338,36 @@ const logout = async (req: Request, res: Response) => {
 }
 
 const forgetPass = async (req: Request, res: Response) => {
+    try{
+        const email = req.body.email;
 
+        const user = await userService.getUserByEmail(email);
+        if(!user){
+            return res.status(200).json({
+                message: "sent reset mail to your email, it will be expired in 10 minutes"
+            })
+        }
+
+        const resetToken = tokenService.createResetToken(email);
+        await tokenService.storeResetToken(resetToken, user.id);
+
+        const sendMail = await mailService.sendResetLink(email, user.name, resetToken);
+
+        return res.status(200).json({
+            message: "sent reset mail to your email, it will be expired in 10 minutes"
+        })
+
+    } catch(err) {
+        res.status(500).json({
+            message: "something went wrong"
+        })
+    }
 }
 
 const resetPass = async (req: Request, res: Response) => {
-
+    res.json({
+        message: "Welcome to password reset page"
+    })
 }
 
 

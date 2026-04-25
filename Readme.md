@@ -103,7 +103,7 @@
     - check is the passed email exist in db or not
         - if yes
             - generate a password reset token
-            - generate hashed token and save that hashed token in redis with 10 minutes expiration
+            - generate hashed token and save that hashed token in redis/persistent-db with 10 minutes expiration
             - send a mail to that email with a link that contain `token` query with the generated token
             - return success message with 200 status code
         - if no

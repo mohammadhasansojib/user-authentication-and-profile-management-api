@@ -12,7 +12,7 @@ router.post('/auth/refresh', User.refresh);
 router.post('/auth/forget-password', User.forgetPass);
 router.post('/auth/reset-password', User.resetPass);
 
-router.use(accessAuth);
+// router.use(accessAuth);
 
 router.get('/users/me', User.getMe);
 router.put('/users/me', User.updateMe);
