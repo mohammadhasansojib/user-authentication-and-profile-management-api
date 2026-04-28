@@ -112,13 +112,13 @@
 ---
 
 - ### `POST - /api/auth/reset-password?token=my-token`
-    - check if the token exist in redis or not
+    - check if the token exist in redis/persistent-db or not
         - if exist
             - verify the token validity
                 - if valid
                     - check is there any password passed in request body
                         - if password exist
-                            - delete all refresh token & reset token with that user id from redis
+                            - delete all refresh token & reset token with that user id from redis/persistent-db
                             - update password
                             - return success message with 200 status code
                         - if password not exist
@@ -150,6 +150,15 @@
 	uid,
 	sid,
 	refresh_token
+}
+```
+
+### Password Reset Token JWT Payload Format
+
+```typescript
+{
+	email,
+	type: "access" || "refresh" || "reset",
 }
 ```
 

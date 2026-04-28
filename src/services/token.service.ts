@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import {add} from "date-fns"
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const accessTokenLifetime = Number(process.env.ACCESS_TOKEN_LIFETIME);
 const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
@@ -75,7 +76,7 @@ const deleteSingleRefreshToken = async (user_id: number, sid: string) => {
 
     return refreshToken;
 }
-const deleteAllRefreshToken = async (user_id: number) => {
+const deleteAllRefreshTokens = async (user_id: number) => {
     const refreshTokens = await prisma.refresh_tokens.deleteMany({
         where: {
             user_id
@@ -103,7 +104,10 @@ const storeResetToken = async (token: string, user_id: number) => {
     const expireAt = add(new Date(), {
         minutes: 10
     });
-    const hash_token = await bcrypt.hash(token, 10);
+    const hash_token = crypto
+                        .createHash('sha256')
+                        .update(token)
+                        .digest('hex');
 
     const resetToken = await prisma.password_reset_tokens.create({
         data: {
@@ -115,6 +119,33 @@ const storeResetToken = async (token: string, user_id: number) => {
 
     return resetToken;
 }
+const resetTokenValidity = async (token: string) => {
+    const hash_token = crypto
+                        .createHash('sha256')
+                        .update(token as string)
+                        .digest('hex');
+
+    const reset_token = await prisma.password_reset_tokens.findUnique({
+        where: {
+            token: hash_token
+        }
+    });
+    if(!reset_token) return false;
+
+    const isTokenExpired = reset_token.expires_at < new Date();
+    if(isTokenExpired) return false;
+
+    return true;
+}
+const deleteAllResetTokens = async (user_id: number) => {
+    const resetTokens = await prisma.password_reset_tokens.deleteMany({
+        where: {
+            user_id
+        }
+    })
+
+    return resetTokens;
+}
 
 
 
@@ -125,8 +156,10 @@ export default {
     storeRefreshToken,
     getRefreshToken,
     deleteSingleRefreshToken,
-    deleteAllRefreshToken,
+    deleteAllRefreshTokens,
     
     createResetToken,
     storeResetToken,
+    resetTokenValidity,
+    deleteAllResetTokens,
 }

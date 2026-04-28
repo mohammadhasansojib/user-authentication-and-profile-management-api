@@ -7,6 +7,8 @@ import tokenService from "../services/token.service";
 import validationService from "../services/validation.service";
 import jwt from "jsonwebtoken"
 import mailService from "../services/mail.service";
+import crypto from "crypto"
+import { prisma } from "../../lib/prisma";
 
 const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 
@@ -315,7 +317,7 @@ const logout = async (req: Request, res: Response) => {
         }
 
         if(isAllDevice){
-            const refreshTokens = await tokenService.deleteAllRefreshToken(id);
+            const refreshTokens = await tokenService.deleteAllRefreshTokens(id);
             message = "deleted all refresh tokens successfully";
         } else {
             const refreshToken = await tokenService.deleteSingleRefreshToken(id, sid as string);
@@ -365,9 +367,68 @@ const forgetPass = async (req: Request, res: Response) => {
 }
 
 const resetPass = async (req: Request, res: Response) => {
-    res.json({
-        message: "Welcome to password reset page"
-    })
+    try{
+        const password = req.body ? req.body.password : undefined;
+
+        const token = req.query.token;
+        if(!token) return res.status(401).json({
+            message: "Invalid token"
+        });
+
+        const isTokenValid = await tokenService.resetTokenValidity(token as string);
+        if(!isTokenValid) return res.status(401).json({
+            message: "Invalid token"
+        })
+
+        if(!password){
+            return res.status(200).json({
+                message: "request sucessfully completed"
+            })
+        }
+
+        const decoded = jwt.verify(token as string, process.env.JWT_SECRET as string);
+
+        const user = await userService.getUserByEmail((decoded as {email: string, type: string}).email);
+
+        if(!user) return res.status(400).json({
+            message: "bad request"
+        })
+
+
+        const isValid = await validationService.validateUpdateInfo({password});
+        if(!isValid) return res.status(401).json({
+            message: "Invalid data"
+        })
+
+        await userService.updateUser({
+            password
+        }, user.id);
+        await tokenService.deleteAllRefreshTokens(user.id);
+        await tokenService.deleteAllResetTokens(user.id);
+        
+
+        res.json({
+            message: "updated successfully"
+        })
+        
+    } catch(err) {
+        if(err instanceof z.ZodError){
+            let messages = [];
+
+            for(const issue of err.issues){
+                messages.push(`${issue.message} -> ${issue.path}`);
+            }
+
+            res.status(400).json({
+                messages,
+                issues: err.issues
+            })
+        } else {
+            res.status(500).json({
+                message: "Soemthing went wrong"
+            })
+        }
+    }
 }
 
 
