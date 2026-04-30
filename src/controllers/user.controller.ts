@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import * as z from 'zod'
-import { Prisma } from "../../generated/prisma/client";
+import { Prisma } from "../generated/prisma/client";
 import bcrypt from "bcryptjs"
 import userService from "../services/user.service"
 import tokenService from "../services/token.service";
@@ -8,7 +8,7 @@ import validationService from "../services/validation.service";
 import jwt from "jsonwebtoken"
 import mailService from "../services/mail.service";
 import crypto from "crypto"
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 
 const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 

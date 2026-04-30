@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import {add} from "date-fns"
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 

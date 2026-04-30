@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon src/server.ts"
+
+    "build": "npm install && npx prisma generate && npx tsc",
+    
+    "start": "node dist/server.js",
+    "dev": "npx nodemon src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +33,7 @@
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.3.0",
+    "@types/node": "^25.6.0",
     "@types/nodemailer": "^7.0.11",
     "@types/pg": "^8.16.0",
     "cookie-parser": "^1.4.7",

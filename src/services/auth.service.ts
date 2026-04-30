@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 import userService from "../services/user.service"
 import jwt from "jsonwebtoken"
 import type {Request, Response} from "express";
