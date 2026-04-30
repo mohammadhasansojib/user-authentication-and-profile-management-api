@@ -138,7 +138,7 @@
 {
 	uid,
 	sid?,
-	email,
+email,
 	type: "access" || "refresh" || "reset"
 }
 ```
