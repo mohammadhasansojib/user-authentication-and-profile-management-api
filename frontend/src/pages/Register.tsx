@@ -1,6 +1,7 @@
 import {useForm, type SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { useState } from 'react'
 
 
 const RegistrationDataSchema = z.object({
@@ -15,7 +16,11 @@ interface IRegistrationFormData {
     password: string,
 }
 
+const api_url = import.meta.env.VITE_API_URL;
+
 const Register = () => {
+    const [error, setError] = useState<string | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -23,8 +28,35 @@ const Register = () => {
     } = useForm<IRegistrationFormData>({
         resolver: zodResolver(RegistrationDataSchema),
     });
+
     const onSubmit: SubmitHandler<IRegistrationFormData> = (data: IRegistrationFormData) => {
-        console.log(data);
+
+        const sendData = async () => {
+            try {
+                const res = await fetch(`${api_url}/api/auth/register`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if(!res.ok){
+                    const res_err = await res.json();
+                    throw new Error(`${res_err.message}`);
+                }
+
+                const res_data = await res.json();
+                window.location.href = `/login`
+
+                return res_data;
+            } catch (error) {
+                setError((error as {message: string}).message);
+                console.error(`Error during POST: ${(error as {message: string}).message}`);
+            }
+        }
+
+        sendData();
     };
 
 
@@ -60,6 +92,9 @@ const Register = () => {
 
                     <input type="submit" value="register" />
                 </form>
+                {
+                    error && <span>{error}</span>
+                }
             </div>
         </div>
     )
