@@ -3,6 +3,7 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import config from '../config'
 
 const LoginDataSchema = z.object({
     email: z.email("must be a valid email"),
@@ -46,6 +47,7 @@ const Login = () => {
                 }
 
                 const res_data = await res.json();
+                config.accessToken = res_data.accessToken;
 
                 // console.log(data);
                 console.log(res);
