@@ -1,4 +1,5 @@
 // import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
     // const [data, setData] = useState<{message: string} | null>(null);
@@ -18,6 +19,7 @@ const Dashboard = () => {
 
     return (
         <div>
+            <Navbar />
             <h1>Dashboard</h1>
         </div>
     )

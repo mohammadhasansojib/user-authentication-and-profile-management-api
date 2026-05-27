@@ -52,7 +52,7 @@ const Login = () => {
                 // console.log(data);
                 console.log(res);
                 console.log(res_data);
-                navigate('/dashboard');
+                navigate('/profile');
                 
             } catch (error) {
                 setErrorMessage(`${(error as {message: string}).message}`);

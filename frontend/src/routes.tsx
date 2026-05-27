@@ -23,7 +23,7 @@ const router = createBrowserRouter([
             {
                 path: '/profile',
                 loader: async () => {
-                    return {records: await DataService.getHelloWorld()}
+                    return {records: await DataService.getProfileData()}
                 },
                 Component: Profile,
             },

@@ -4,7 +4,7 @@ interface IConfig {
 }
 
 const config: IConfig = {
-    accessToken: null
+    accessToken: "algo.payload.secret"
 }
 
 export default config;
