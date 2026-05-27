@@ -1,6 +1,8 @@
 import {useForm, type SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const LoginDataSchema = z.object({
     email: z.email("must be a valid email"),
@@ -12,7 +14,12 @@ interface ILoginFormData {
     password: string,
 }
 
+const api_url = import.meta.env.VITE_API_URL;
+
 const Login = () => {
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -20,7 +27,38 @@ const Login = () => {
     } = useForm<ILoginFormData>({
         resolver: zodResolver(LoginDataSchema),
     });
-    const onSubmit: SubmitHandler<ILoginFormData> = (data: ILoginFormData) => console.log(data);
+    const onSubmit: SubmitHandler<ILoginFormData> = (data: ILoginFormData) => {
+
+        const sendData = async () => {
+            try {
+                const res = await fetch(`${api_url}/api/auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!res.ok) {
+                    const err_data = await res.json();
+                    // console.log(err_data);
+                    throw new Error(`${err_data.message}`);
+                }
+
+                const res_data = await res.json();
+
+                // console.log(data);
+                console.log(res);
+                console.log(res_data);
+                navigate('/dashboard');
+                
+            } catch (error) {
+                setErrorMessage(`${(error as {message: string}).message}`);
+            }
+        }
+
+        sendData();
+    }
 
 
 
@@ -48,9 +86,13 @@ const Login = () => {
 
                     <input type="submit" value="login" />
                 </form>
+                {
+                    errorMessage && <span>{errorMessage}</span>
+                }
             </div>
         </div>
     )
 }
+
 
 export default Login;
