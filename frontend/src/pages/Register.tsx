@@ -2,6 +2,7 @@ import {useForm, type SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 
 const RegistrationDataSchema = z.object({
@@ -19,6 +20,7 @@ interface IRegistrationFormData {
 const api_url = import.meta.env.VITE_API_URL;
 
 const Register = () => {
+    const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
 
     const {
@@ -47,7 +49,7 @@ const Register = () => {
                 }
 
                 const res_data = await res.json();
-                window.location.href = `/login`
+                navigate("/login");
 
                 return res_data;
             } catch (error) {
