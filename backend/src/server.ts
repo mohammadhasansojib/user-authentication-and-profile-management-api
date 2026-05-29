@@ -26,9 +26,12 @@ redis.on('error', err => console.log('Redis Client Error', err));
 
 const app = express();
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(cors());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
     secret: process.env.SESSION_SECRET as string,
