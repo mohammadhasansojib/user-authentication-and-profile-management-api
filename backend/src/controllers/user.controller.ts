@@ -96,24 +96,26 @@ const login = async (req: Request, res: Response) => {
         const accessToken = tokenService.createAccessToken(sid, user.id, user.email);
         const refreshToken = tokenService.createRefreshToken(sid, user.id, user.email);
 
+        const isProduction = process.env.NODE_ENV === "production";
+
         res.cookie("uid", user.id, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             path: '/',
             maxAge: refreshTokenLifetime
         })
         res.cookie("sid", sid, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             path: "/",
             maxAge: refreshTokenLifetime
         });
         res.cookie("refresh_token", refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             signed: true,
             path: "/",
             maxAge: refreshTokenLifetime
