@@ -96,29 +96,28 @@ const login = async (req: Request, res: Response) => {
         const accessToken = tokenService.createAccessToken(sid, user.id, user.email);
         const refreshToken = tokenService.createRefreshToken(sid, user.id, user.email);
 
-        const isProduction = process.env.NODE_ENV === "production";
+        interface CookieOptions {
+            httpOnly: boolean,
+            secure: boolean,
+            sameSite: boolean | "none" | "lax" | "strict" | undefined,
+            path: string,
+            maxAge: number,
+            signed?: boolean,
+        }
 
-        res.cookie("uid", user.id, {
+        const cookieOptions: CookieOptions = {
             httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
+            secure: true,
+            sameSite: "none",
             path: '/',
-            maxAge: refreshTokenLifetime
-        })
-        res.cookie("sid", sid, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
-            path: "/",
-            maxAge: refreshTokenLifetime
-        });
+            maxAge: refreshTokenLifetime,
+        };
+
+        res.cookie("uid", user.id, cookieOptions);
+        res.cookie("sid", sid, cookieOptions);
         res.cookie("refresh_token", refreshToken, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
+            ...cookieOptions,
             signed: true,
-            path: "/",
-            maxAge: refreshTokenLifetime
         });
 
         // await redisService.setLoginDetails(sid, user.id, refreshToken);
