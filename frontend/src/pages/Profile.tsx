@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 
@@ -13,12 +13,18 @@ export interface IProfile {
 }
 
 const Profile = () => {
+    const navigate = useNavigate();
     const {records} = useLoaderData() as {
         records: {
             message: string,
             user: IProfile,
         }
     };
+
+    if (!records.user) {
+        navigate("/login");
+    }
+
     console.log(records);
     const [profileInfo, setProfileInfo] = useState<IProfile | null>(null);
 
