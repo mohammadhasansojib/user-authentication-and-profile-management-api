@@ -93,9 +93,9 @@ const login = async (req: Request, res: Response) => {
             message: "Invalid Credentials, wrong password"
         })
 
-        res.clearCookie("uid");
-        res.clearCookie("sid");
-        res.clearCookie("refresh_token");
+        // res.clearCookie("uid");
+        // res.clearCookie("sid");
+        // res.clearCookie("refresh_token");
 
         const regenerateSession = (req: Request): Promise<void> => {
             return new Promise((resolve, reject) => {
