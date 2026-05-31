@@ -12,6 +12,23 @@ import { prisma } from "../lib/prisma";
 
 const refreshTokenLifetime = Number(process.env.REFRESH_TOKEN_LIFETIME);
 
+interface CookieOptions {
+    httpOnly: boolean,
+    secure: boolean,
+    sameSite: boolean | "none" | "lax" | "strict" | undefined,
+    path: string,
+    maxAge: number,
+    signed?: boolean,
+}
+
+const cookieOptions: CookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: '/',
+    maxAge: refreshTokenLifetime,
+};
+
 
 const register = async (req: Request, res: Response) => {
     try{
@@ -96,23 +113,6 @@ const login = async (req: Request, res: Response) => {
         const accessToken = tokenService.createAccessToken(sid, user.id, user.email);
         const refreshToken = tokenService.createRefreshToken(sid, user.id, user.email);
 
-        interface CookieOptions {
-            httpOnly: boolean,
-            secure: boolean,
-            sameSite: boolean | "none" | "lax" | "strict" | undefined,
-            path: string,
-            maxAge: number,
-            signed?: boolean,
-        }
-
-        const cookieOptions: CookieOptions = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: '/',
-            maxAge: refreshTokenLifetime,
-        };
-
         res.cookie("uid", user.id, cookieOptions);
         res.cookie("sid", sid, cookieOptions);
         res.cookie("refresh_token", refreshToken, {
@@ -186,27 +186,11 @@ const refresh = async (req: Request, res: Response) => {
         const newAccessToken = tokenService.createAccessToken(newSid, user.id, user.email);
         const newRefreshToken = tokenService.createRefreshToken(newSid, user.id, user.email);
 
-        res.cookie("uid", user.id, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            path: '/',
-            maxAge: refreshTokenLifetime
-        })
-        res.cookie("sid", newSid, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            path: "/",
-            maxAge: refreshTokenLifetime
-        });
+        res.cookie("uid", user.id, cookieOptions)
+        res.cookie("sid", newSid, cookieOptions);
         res.cookie("refresh_token", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            ...cookieOptions,
             signed: true,
-            path: "/",
-            maxAge: refreshTokenLifetime
         });
 
         await tokenService.storeRefreshToken(user.id, newRefreshToken, newSid);
