@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Reset from "./pages/Reset";
 import DataService from "./utils/data_fetch"
+import ForgetPassword from "./pages/ForgetPassword";
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
                 Component: Profile,
             },
             {path: '/reset-password', Component: Reset},
+            {path: '/forget-password', Component: ForgetPassword}
         ]
     }
 ])
