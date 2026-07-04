@@ -43,12 +43,24 @@ const Logout = () => {
 
 
     return(
-        <div className={`inline-block`}>
-            <button onClick={e => handleClick(e, false)}value="logout">logout</button>
-            <button onClick={e => handleClick(e, true)} value="logout_all">logout all</button>
+        <div className="inline-flex items-center gap-3">
+            <button
+                onClick={e => handleClick(e, false)}
+                value="logout"
+                className="rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800"
+            >
+                Logout
+            </button>
+            <button
+                onClick={e => handleClick(e, true)}
+                value="logout_all"
+                className="rounded-lg border border-slate-800 bg-transparent px-3.5 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-900 hover:text-slate-100"
+            >
+                Logout all
+            </button>
 
             {
-                failedMessage && <span>{failedMessage}</span>
+                failedMessage && <span className="text-xs text-red-400">{failedMessage}</span>
             }
         </div>
     )

@@ -36,13 +36,23 @@ const Profile = () => {
     }, [records]);
 
     return (
-        <div>
+        <div className="min-h-screen bg-slate-950">
             <Navbar />
-            <div>
-                <h1>Profile</h1>
-                <div>
-                    {profileInfo && <p>Name: {profileInfo?.name}</p>}
-                    {profileInfo && <p>Email: {profileInfo?.email}</p>}
+            <div className="max-w-2xl mx-auto px-4 py-12">
+                <h1 className="text-2xl font-semibold text-slate-100 tracking-tight mb-8">Profile</h1>
+                <div className="rounded-lg border border-slate-800 bg-slate-900 divide-y divide-slate-800">
+                    {profileInfo && (
+                        <div className="flex items-center justify-between px-4 py-3.5">
+                            <span className="text-sm text-slate-400">Name</span>
+                            <span className="text-sm font-medium text-slate-100">{profileInfo?.name}</span>
+                        </div>
+                    )}
+                    {profileInfo && (
+                        <div className="flex items-center justify-between px-4 py-3.5">
+                            <span className="text-sm text-slate-400">Email</span>
+                            <span className="text-sm font-medium text-slate-100">{profileInfo?.email}</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -19,10 +19,14 @@ const Dashboard = () => {
 
 
     return (
-        <div>
+        <div className="min-h-screen bg-slate-950">
             <Navbar />
-            <h1>Dashboard</h1>
-            <Logout />
+            <div className="max-w-2xl mx-auto px-4 py-12">
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Dashboard</h1>
+                    <Logout />
+                </div>
+            </div>
         </div>
     )
 }

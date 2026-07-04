@@ -70,29 +70,51 @@ const ResetPasswordForm = ({token}: {token: string}) => {
     
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <label htmlFor="new_password">New Password:  </label>
-            <input type="password" {...register("new_password", {required: true})}  aria-invalid={errors.new_password ? true : false} id="new_password" placeholder="new password here..." />
-            {
-                errors.new_password?.type === 'required' && <p role="alert">password is required</p>
-            }
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+                <label htmlFor="new_password" className="block text-sm font-medium text-slate-300 mb-1.5">New password</label>
+                <input
+                    type="password"
+                    {...register("new_password", {required: true})}
+                    aria-invalid={errors.new_password ? true : false}
+                    id="new_password"
+                    placeholder="new password here..."
+                    className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500"
+                />
+                {
+                    errors.new_password?.type === 'required' && <p role="alert" className="mt-1.5 text-xs text-red-400">password is required</p>
+                }
+            </div>
 
-            <label htmlFor="confirm_password">Confirm Password:  </label>
-            <input type="password" {...register("confirm_password", {required: true})}  id="confirm_password" aria-invalid={errors.confirm_password ? true : false} placeholder="confirm password here..." />
-            {
-                errors.confirm_password?.type === 'required' && <p role="alert">password is required</p>
-            }
-            {
-                errors.confirm_password?.message && <p>{errors.confirm_password.message}</p>
-            }
+            <div>
+                <label htmlFor="confirm_password" className="block text-sm font-medium text-slate-300 mb-1.5">Confirm password</label>
+                <input
+                    type="password"
+                    {...register("confirm_password", {required: true})}
+                    id="confirm_password"
+                    aria-invalid={errors.confirm_password ? true : false}
+                    placeholder="confirm password here..."
+                    className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500"
+                />
+                {
+                    errors.confirm_password?.type === 'required' && <p role="alert" className="mt-1.5 text-xs text-red-400">password is required</p>
+                }
+                {
+                    errors.confirm_password?.message && <p className="mt-1.5 text-xs text-red-400">{errors.confirm_password.message}</p>
+                }
+            </div>
 
-            <input type="submit" value="send" />
+            <input
+                type="submit"
+                value="Send"
+                className="w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-slate-950 cursor-pointer transition-colors hover:bg-emerald-400 active:bg-emerald-600"
+            />
 
             {
-                successMessage && <p>{successMessage}</p>
+                successMessage && <p className="rounded-lg border border-emerald-900 bg-emerald-950/50 px-3.5 py-2.5 text-sm text-emerald-400">{successMessage}</p>
             }
             {
-                errorMessage && <p>{errorMessage}</p>
+                errorMessage && <p className="rounded-lg border border-red-900 bg-red-950/50 px-3.5 py-2.5 text-sm text-red-400">{errorMessage}</p>
             }
         </form>
     )

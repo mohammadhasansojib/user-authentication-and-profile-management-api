@@ -37,12 +37,19 @@ const Reset = () => {
 
 
     return (
-        <div>
-            <h1>Reset</h1>
-            { showForm && <ResetPasswordForm token={token} />}
-            {
-                errorMessage && <p>{errorMessage}</p>
-            }
+        <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
+            <div className="w-full max-w-sm">
+                <h1 className="text-2xl font-semibold text-slate-100 tracking-tight mb-8">Reset password</h1>
+                { !showForm && !errorMessage && (
+                    <p className="text-sm text-slate-400">Verifying your reset link…</p>
+                )}
+                { showForm && <ResetPasswordForm token={token} />}
+                {
+                    errorMessage && (
+                        <p className="rounded-lg border border-red-900 bg-red-950/50 px-3.5 py-2.5 text-sm text-red-400">{errorMessage}</p>
+                    )
+                }
+            </div>
         </div>
     )
 }

@@ -1,5 +1,6 @@
-import { 
+import {
   createBrowserRouter,
+  redirect,
 } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
@@ -24,7 +25,11 @@ const router = createBrowserRouter([
             {
                 path: '/profile',
                 loader: async () => {
-                    return {records: await DataService.getProfileData()}
+                    const records = await DataService.getProfileData();
+                    if (!records.user) {
+                        return redirect("/login");
+                    }
+                    return {records};
                 },
                 Component: Profile,
             },

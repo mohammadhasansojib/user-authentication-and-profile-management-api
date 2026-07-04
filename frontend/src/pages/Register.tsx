@@ -63,39 +63,65 @@ const Register = () => {
 
 
     return (
-        <div onSubmit={handleSubmit(onSubmit)}>
-            <div>
-                <h1>Register</h1>
+        <div onSubmit={handleSubmit(onSubmit)} className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
+            <div className="w-full max-w-sm">
+                <h1 className="text-2xl font-semibold text-slate-100 tracking-tight mb-1">Create your account</h1>
+                <p className="text-sm text-slate-400 mb-8">Register with your details to get started.</p>
 
-                <form>
+                <form className="space-y-5">
                     <div>
-                        <label htmlFor="email">email: </label>
-                        <input type="email" {...register("email")} id="email" aria-invalid={errors.email ? "true" : "false"} />
+                        <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                        <input
+                            type="email"
+                            {...register("email")}
+                            id="email"
+                            aria-invalid={errors.email ? "true" : "false"}
+                            placeholder="you@example.com"
+                            className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500"
+                        />
                         {
-                            errors.email && <span role="alert">{errors.email.message}</span>
+                            errors.email && <span role="alert" className="mt-1.5 block text-xs text-red-400">{errors.email.message}</span>
                         }
                     </div>
 
                     <div>
-                        <label htmlFor="name">name: </label>
-                        <input type="name" {...register("name")} id="name" aria-invalid={errors.name ? "true" : "false"} />
+                        <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1.5">Name</label>
+                        <input
+                            type="name"
+                            {...register("name")}
+                            id="name"
+                            aria-invalid={errors.name ? "true" : "false"}
+                            placeholder="Jane Doe"
+                            className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500"
+                        />
                         {
-                            errors.name && <span role="alert">{errors.name.message}</span>
+                            errors.name && <span role="alert" className="mt-1.5 block text-xs text-red-400">{errors.name.message}</span>
                         }
                     </div>
 
                     <div>
-                        <label htmlFor="password">password: </label>
-                        <input type="password" {...register("password")} id="password" aria-invalid={errors.password ? "true" : "false"} />
+                        <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+                        <input
+                            type="password"
+                            {...register("password")}
+                            id="password"
+                            aria-invalid={errors.password ? "true" : "false"}
+                            placeholder="••••••••"
+                            className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500"
+                        />
                         {
-                            errors.password && <span role="alert">{errors.password.message}</span>
+                            errors.password && <span role="alert" className="mt-1.5 block text-xs text-red-400">{errors.password.message}</span>
                         }
                     </div>
 
-                    <input type="submit" value="register" />
+                    <input
+                        type="submit"
+                        value="Register"
+                        className="w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-slate-950 cursor-pointer transition-colors hover:bg-emerald-400 active:bg-emerald-600"
+                    />
                 </form>
                 {
-                    error && <span>{error}</span>
+                    error && <span className="mt-4 block rounded-lg border border-red-900 bg-red-950/50 px-3.5 py-2.5 text-sm text-red-400">{error}</span>
                 }
             </div>
         </div>
