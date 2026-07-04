@@ -27,7 +27,7 @@ redis.on('error', err => console.log('Redis Client Error', err));
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://user-authentication-and-profile-man.vercel.app",
     credentials: true,
 }));
 app.use(express.json());
